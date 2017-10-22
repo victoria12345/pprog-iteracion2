@@ -1,9 +1,9 @@
-/** 
+/**
  * @brief Implementa las funciones para el manejo de las casillas.
- * 
+ *
  * @file space.c
  * @author Victoria Pelayo e Ignacio Rabuñal
- * @version 1.0 
+ * @version 1.0
  * @date 29/09/2017
  * @copyright GNU Public License
  */
@@ -22,7 +22,7 @@ struct _Space {
     Id south; /*!< Id de la casilla que está al sur */
     Id east; /*!< Id de la casilla que está al este */
     Id west; /*!< Id de la casilla que está al oeste */
-    Id id_object; /*!< id del objeto que se encuentra en la casilla */
+    Set* objects; /*!< id del objeto que se encuentra en la casilla */
 };
 
 
@@ -47,7 +47,7 @@ Space* space_create(Id id) {
     newSpace->east = NO_ID;
     newSpace->west = NO_ID;
 
-    newSpace->id_object = NO_ID;
+    newSpace->objects = set_create();
 
     return newSpace;
 }
@@ -57,6 +57,8 @@ STATUS space_destroy(Space* space) {
     if (!space) {
         return ERROR;
     }
+
+    set_destroy(space->objects);
 
     free(space);
     space = NULL;
@@ -114,14 +116,19 @@ STATUS space_set_west(Space* space, Id id) {
 }
 
 
-STATUS space_set_object(Space* space, Id id_object) {
+STATUS space_add_object(Space* space, Id id_object) {
+    if (!space) {
+        return ERROR;
+    }
+    return set_add_element(space->objects, id_object);
+}
+
+STATUS space_del_object(Space* space, Id id_object) {
     if (!space  ) {
         return ERROR;
     }
-    space->id_object = id_object;
-    return OK;
+    return set_del_element(space->objects, id_object);
 }
-
 
 const char * space_get_name(Space* space) {
     if (!space) {
@@ -130,6 +137,13 @@ const char * space_get_name(Space* space) {
     return space->name;
 }
 
+BOOL object_in_space(Space* space, Id id_object){
+  if(!space) return FALSE;
+
+  if (get_position_element(space->objects, id_object) == -1) return FALSE;
+
+  return TRUE;
+}
 
 Id space_get_id(Space* space) {
     if (!space) {
@@ -171,57 +185,56 @@ Id space_get_west(Space* space) {
 }
 
 
-Id space_get_object(Space* space) {
+Id* space_get_object(Space* space) {
     if (!space) {
         return FALSE;
     }
-    return space->id_object;
+    return set_get_elements(space->objects);
 }
 
 
 STATUS space_print(Space* space) {
     Id idaux = NO_ID;
-  
+
     if (!space) {
         return ERROR;
     }
 
     fprintf(stdout, "--> Space (Id: %ld; Name: %s)\n", space->id, space->name);
-    
+
     idaux = space_get_north(space);
     if (NO_ID != idaux) {
         fprintf(stdout, "---> North link: %ld.\n", idaux);
     } else {
         fprintf(stdout, "---> No north link.\n");
     }
-    
+
     idaux = space_get_south(space);
     if (NO_ID != idaux) {
         fprintf(stdout, "---> South link: %ld.\n", idaux);
     } else {
         fprintf(stdout, "---> No south link.\n");
     }
-    
+
     idaux = space_get_east(space);
     if (NO_ID != idaux) {
         fprintf(stdout, "---> East link: %ld.\n", idaux);
     } else {
         fprintf(stdout, "---> No east link.\n");
     }
-    
+
     idaux = space_get_west(space);
     if (NO_ID != idaux) {
         fprintf(stdout, "---> West link: %ld.\n", idaux);
     } else {
         fprintf(stdout, "---> No west link.\n");
     }
-    
+
    if (space_get_object(space)) {
-        fprintf(stdout, "---> Object in the space.\n");
+        set_print(space->objects);
     } else {
         fprintf(stdout, "---> No object in the space.\n");
     }
 
     return OK;
 }
-
