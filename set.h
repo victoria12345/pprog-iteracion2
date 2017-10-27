@@ -14,10 +14,7 @@
  #include "types.h"
  #define N_OBJECTS 3
 
- typedef struct _Set{
-	Id elements[N_OBJECTS];
-	int num_elements;
-}Set;
+ typedef struct _Set Set;
 
  Set* set_create();
  void set_destroy(Set* set);

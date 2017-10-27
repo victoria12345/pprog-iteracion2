@@ -11,15 +11,15 @@
  #include <stdio.h>
  #include <stdlib.h>
  #include "set.h"
-/**
+
  struct _Set{
 	Id elements[N_OBJECTS];
 	int num_elements;
  };
 
-*/
+
  Set* set_create(){
-	Set *newSet;
+	  Set *newSet;
    	newSet = (Set*) malloc(sizeof(Set));
    	if( !newSet ) return NULL;
 
@@ -37,12 +37,12 @@
  }
 
  STATUS set_add_element (Set* set, Id id_element){
-   	
+
    	if (!set || id_element == NO_ID) return ERROR;
 
    	if(set->num_elements == N_OBJECTS) return ERROR;
 
-	if (element_in_set(set, id_element) == TRUE) return ERROR;   	
+	if (element_in_set(set, id_element) == TRUE) return ERROR;
 
    	set->elements[set->num_elements] = id_element;
    	set->num_elements ++;
