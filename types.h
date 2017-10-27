@@ -1,9 +1,9 @@
-/** 
+/**
  * @brief Define tipos comunes.
- * 
+ *
  * @file types.h
  * @author Victoria Pelayo e Ignacio Rabuñal.
- * @version 1.0 
+ * @version 1.0
  * @date 13-01-2015
  * @copyright GNU Public License
  */
@@ -13,7 +13,7 @@
 #define TYPES_H
 
 /** */
-#define WORD_SIZE 1000
+#define WORD_SIZE 100
 #define NO_ID -1
 
 /**
