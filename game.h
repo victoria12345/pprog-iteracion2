@@ -1,12 +1,12 @@
 /**
- * @brief Prototipo de las funciones de juego.
- *
- * @file game.h
- * @author Victoria Pelayo e Ignacio Rabunnal
- * @version 1.1
- * @date 24-09-2017
- * @copyright GNU Public License
- */
+* @brief Prototipo de las funciones de juego.
+*
+* @file game.h
+* @author Victoria Pelayo e Ignacio Rabunnal
+* @version 1.1
+* @date 24-09-2017
+* @copyright GNU Public License
+*/
 
 
 #ifndef GAME_H

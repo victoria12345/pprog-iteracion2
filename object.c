@@ -1,12 +1,12 @@
-/** 
- * @brief Implementa las funciones para el manejo de objetos.
- * 
- * @file object.c
- * @author Victoria Pelayo e Ignacio Rabuñal
- * @version 1.0 
- * @date 28/09/2017
- * @copyright GNU Public License
- */
+/**
+* @brief Implementa las funciones para el manejo de objetos.
+*
+* @file object.c
+* @author Victoria Pelayo e Ignacio Rabuñal
+* @version 1.0
+* @date 28/09/2017
+* @copyright GNU Public License
+*/
 
 
 #include <stdio.h>
@@ -18,7 +18,7 @@
 struct _Object {
 	Id id; /*!< identificador */
 	char name[WORD_SIZE + 1]; /*!< nombre */
-}; 
+};
 
 
 Object* object_create(Id id, char* name) {
@@ -26,17 +26,17 @@ Object* object_create(Id id, char* name) {
 	Object *newObject = NULL;
 
 	if (id == NO_ID)
-		return NULL;
+	return NULL;
 
 	if (name == NULL || strlen(name) > WORD_SIZE)
-		return NULL;
+	return NULL;
 
 	newObject = (Object *) malloc(sizeof (Object));
 
 	if (newObject == NULL) {
-	        return NULL;
+		return NULL;
 	}
-    	
+
 	strcpy(newObject->name,name);
 	newObject->id = id;
 
@@ -52,7 +52,7 @@ void object_destroy(Object * object) {
 	free(object);
 	object = NULL;
 
-   
+
 }
 
 
@@ -70,9 +70,9 @@ char* object_get_name(Object* object){
 
 STATUS object_set_name(Object* object, char* name){
 	if (!object || !name) return ERROR;
-	
+
 	if (!strcpy(object->name, name)) {
-        return ERROR;
+		return ERROR;
 	}
 
 	return OK;

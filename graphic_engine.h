@@ -1,12 +1,12 @@
-/** 
- * @brief Funciones para el manejo del motor gráfico.
- * 
- * @file graphic_engine.h
- * @author Victoria Pelayo e Ignacio Rabuñal
- * @version 1.0 
- * @date 18-01-2017
- * @copyright GNU Public License
- */
+/**
+* @brief Funciones para el manejo del motor gráfico.
+*
+* @file graphic_engine.h
+* @author Victoria Pelayo e Ignacio Rabuñal
+* @version 1.0
+* @date 18-01-2017
+* @copyright GNU Public License
+*/
 
 #ifndef __GRAPHIC_ENGINE__
 #define __GRAPHIC_ENGINE__
@@ -15,7 +15,7 @@
 
 /**
 *@brief motor gráfico
-*Esta estructura define un motor gráfico que cuenta con 5 areas de pantalla con usos diferentes. 
+*Esta estructura define un motor gráfico que cuenta con 5 areas de pantalla con usos diferentes.
 */
 typedef struct _Graphic_engine Graphic_engine;
 

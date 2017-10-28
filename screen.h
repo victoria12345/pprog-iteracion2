@@ -1,12 +1,12 @@
-/** 
- * @brief Prototipo de  las funciones para la pantalla.
- * 
- * @file screen.h
- * @author Victoria Pelayo e Ignacio Rabuñal
- * @version 1.0 
- * @date 11-01-2017
- * @copyright GNU Public License
- */
+/**
+* @brief Prototipo de  las funciones para la pantalla.
+*
+* @file screen.h
+* @author Victoria Pelayo e Ignacio Rabuñal
+* @version 1.0
+* @date 11-01-2017
+* @copyright GNU Public License
+*/
 
 #ifndef __SCREEN__
 #define __SCREEN__
@@ -16,7 +16,7 @@
 
 /**
 *@brief area
-*Esta estructura define areas que colocaremos en la pantalla y que usará el motor gráfico para cargar la información del juego. 
+*Esta estructura define areas que colocaremos en la pantalla y que usará el motor gráfico para cargar la información del juego.
 */
 typedef struct _Area Area;
 
@@ -44,10 +44,10 @@ void  screen_gets(char *str);
 
 /**
 *@brief crea un area de pantalla.
-*@param x posición del eje x de la pantalla donde se empezará a crear el area. 
-*@param y posición del eje y de la pantalla donde se empezará a crear el area. 
-*@param width ancho de la pantalla. 
-*@param height alto de la pantalla. 
+*@param x posición del eje x de la pantalla donde se empezará a crear el area.
+*@param y posición del eje y de la pantalla donde se empezará a crear el area.
+*@param width ancho de la pantalla.
+*@param height alto de la pantalla.
 *@return puntero al area creada.
 */
 Area* screen_area_init(int x, int y, int width, int height);

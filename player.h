@@ -1,12 +1,12 @@
-/** 
- * @brief Funcionalidad para el manejo de jugadores
- * 
- * @file player.h
- * @author Victoria Pelayo e Ignacio Rabunnal
- * @version 1.0 
- * @date 25-09-2017 
- * @copyright GNU Public License
- */
+/**
+* @brief Funcionalidad para el manejo de jugadores
+*
+* @file player.h
+* @author Victoria Pelayo e Ignacio Rabunnal
+* @version 1.0
+* @date 25-09-2017
+* @copyright GNU Public License
+*/
 
 #ifndef PLAYER_H
 #define PLAYER_H
@@ -16,7 +16,7 @@
 /**
 *@brief Jugador
 *Esta estructura define un jugador que consta de un nombre y un Id que lo identifican
-*además de un Id que indica la casilla en la que está situado y un entero que identifica el objeto que lleva el jugador. 
+*además de un Id que indica la casilla en la que está situado y un entero que identifica el objeto que lleva el jugador.
 */
 typedef struct _Player Player;
 

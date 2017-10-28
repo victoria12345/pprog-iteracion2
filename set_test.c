@@ -11,7 +11,7 @@ int main(){
 		printf("Error creando set");
 		return -1;
 	}
-	
+
 	for(i = 0; i < N_OBJECTS; i++ ) set_add_element(s1,i+1);
 
 	set_print(s1);
@@ -27,12 +27,12 @@ int main(){
 	printf("\n");
 
 	for (i = 0; i< N_OBJECTS; i++) set_del_element(s1, i+1);
-	
+
 	set_print(s1);
 
 	if (set_del_element(s1,4) == OK) return -1;
 
-	set_print(s1); 
+	set_print(s1);
 
 	set_destroy(s1);
 	free(ids);

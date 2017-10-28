@@ -1,12 +1,12 @@
 /**
- * @brief Define tipos comunes.
- *
- * @file types.h
- * @author Victoria Pelayo e Ignacio Rabuñal.
- * @version 1.0
- * @date 13-01-2015
- * @copyright GNU Public License
- */
+* @brief Define tipos comunes.
+*
+* @file types.h
+* @author Victoria Pelayo e Ignacio Rabuñal.
+* @version 1.0
+* @date 13-01-2015
+* @copyright GNU Public License
+*/
 
 /** */
 #ifndef TYPES_H
@@ -35,7 +35,7 @@ typedef enum {
 *enumeracion para definir el tipo status que puede ser ERROR o OK
 */
 typedef enum {
-    ERROR, OK
+  ERROR, OK
 } STATUS;
 
 /***
@@ -43,7 +43,7 @@ typedef enum {
 * enumeracion para definir el tipo DIRECTION que puede ser N,S,W o E
 */
 typedef enum {
-    N, S, E, W
+  N, S, E, W
 } DIRECTION;
 
 #endif

@@ -1,12 +1,12 @@
 /**
- * @brief Prototipos de las funciones para el manejo de casillas
- *
- * @file space.h
- * @author Victoria Pelayo e Ignacio Rabuñal
- * @version 1.1
- * @date 13-01-2015
- * @copyright GNU Public License
- */
+* @brief Prototipos de las funciones para el manejo de casillas
+*
+* @file space.h
+* @author Victoria Pelayo e Ignacio Rabuñal
+* @version 1.1
+* @date 13-01-2015
+* @copyright GNU Public License
+*/
 
 #ifndef SPACE_H
 #define SPACE_H

@@ -1,12 +1,12 @@
 /**
- * @brief Funcionalidad de la carga de espacios
- *
- * @file game_reader.h
- * @author Victoria Pelayo e Ignacio Rabuñal
- * @version 1.0
- * @date 24-09-2017
- * @copyright GNU Public License
- */
+* @brief Funcionalidad de la carga de espacios
+*
+* @file game_reader.h
+* @author Victoria Pelayo e Ignacio Rabuñal
+* @version 1.0
+* @date 24-09-2017
+* @copyright GNU Public License
+*/
 
 #ifndef __GAME_READER_H__
 #define __GAME_READER_H__

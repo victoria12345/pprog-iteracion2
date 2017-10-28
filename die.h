@@ -1,12 +1,12 @@
 /**
- * @brief Funcionalidad para el manejo de dados.
- *
- * @file die.h
- * @author Ignacio Rabunnal
- * @version 1.0
- * @date 11/10/2017
- * @copyright GNU Public License
- */
+* @brief Funcionalidad para el manejo de dados.
+*
+* @file die.h
+* @author Ignacio Rabunnal
+* @version 1.0
+* @date 11/10/2017
+* @copyright GNU Public License
+*/
 
 #ifndef DIE_H
 #define DIE_H

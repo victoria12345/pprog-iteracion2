@@ -1,12 +1,12 @@
 /** 
- * @brief Implementa las funciones para el manejo de los dados.
- * 
- * @file die.c
- * @author Ignacio Rabuñal
- * @version 1.0 
- * @date 11/10/2017
- * @copyright GNU Public License
- */
+* @brief Implementa las funciones para el manejo de los dados.
+*
+* @file die.c
+* @author Ignacio Rabuñal
+* @version 1.0
+* @date 11/10/2017
+* @copyright GNU Public License
+*/
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -27,30 +27,30 @@ Die* die_create(Id id){
 	Die *newDie;
 
 	if(id == NO_ID)
-		return NULL;
+	return NULL;
 
 	newDie = (Die*)malloc(sizeof(Die));
 
 	if(newDie == NULL)
-		return NULL;
+	return NULL;
 
 	newDie->id = id;
 	newDie->latest_roll = -1;
 
-	return newDie;	
+	return newDie;
 }
 
 void die_destroy(Die *die){
 	if(!die)
-		return;
+	return;
 
 	free(die);
-	die = NULL;	
+	die = NULL;
 }
 
 STATUS die_roll(Die *die, int semilla){
 	if(die == NULL || die->id == NO_ID)
-		return ERROR;
+	return ERROR;
 
 	srand(semilla);
 
@@ -60,10 +60,8 @@ STATUS die_roll(Die *die, int semilla){
 
 STATUS die_print(Die *die){
 	if(die == NULL || die->id == NO_ID)
-		return ERROR;
+	return ERROR;
 
 	fprintf(stdout, "Die id: %ld. \nDie latest roll: %d.\n ",die->id, die->latest_roll);
-	return OK;	
+	return OK;
 }
-
-

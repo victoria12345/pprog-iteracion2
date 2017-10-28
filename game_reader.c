@@ -1,12 +1,12 @@
 /**
- * @brief Implementación de la función de carga de espacios.
- *
- * @file game_reader.c
- * @author Victoria Pelayo e Ignacio Rabuñal
- * @version 1.0
- * @date 24-09-2017
- * @copyright GNU Public License
- */
+* @brief Implementación de la función de carga de espacios.
+*
+* @file game_reader.c
+* @author Victoria Pelayo e Ignacio Rabuñal
+* @version 1.0
+* @date 24-09-2017
+* @copyright GNU Public License
+*/
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -16,102 +16,57 @@
 
 
 STATUS game_load_spaces(Game* game, char* filename) {
-    FILE* file = NULL;
-    char line[WORD_SIZE] = "";
-    char name[WORD_SIZE] = "";
-    char* toks = NULL;
-    Id id = NO_ID, north = NO_ID, east = NO_ID, south = NO_ID, west = NO_ID;
-    Space* space = NULL;
-    STATUS status = OK;
+  FILE* file = NULL;
+  char line[WORD_SIZE] = "";
+  char name[WORD_SIZE] = "";
+  char* toks = NULL;
+  Id id = NO_ID, north = NO_ID, east = NO_ID, south = NO_ID, west = NO_ID;
+  Space* space = NULL;
+  STATUS status = OK;
 
-    if (!filename) {
-        return ERROR;
-    }
+  if (!filename) {
+    return ERROR;
+  }
 
-    file = fopen(filename, "r");
-    if (file == NULL) {
-        return ERROR;
-    }
+  file = fopen(filename, "r");
+  if (file == NULL) {
+    return ERROR;
+  }
 
-    while (fgets(line, WORD_SIZE, file)) {
-        if (strncmp("#s:", line, 3) == 0) {
-            toks = strtok(line + 3, "|");
-            id = atol(toks);
-            toks = strtok(NULL, "|");
-            strcpy(name, toks);
-            toks = strtok(NULL, "|");
-            north = atol(toks);
-            toks = strtok(NULL, "|");
-            east = atol(toks);
-            toks = strtok(NULL, "|");
-            south = atol(toks);
-            toks = strtok(NULL, "|");
-            west = atol(toks);
-#ifdef DEBUG
+  while (fgets(line, WORD_SIZE, file)) {
+    if (strncmp("#s:", line, 3) == 0) {
+      toks = strtok(line + 3, "|");
+      id = atol(toks);
+      toks = strtok(NULL, "|");
+      strcpy(name, toks);
+      toks = strtok(NULL, "|");
+      north = atol(toks);
+      toks = strtok(NULL, "|");
+      east = atol(toks);
+      toks = strtok(NULL, "|");
+      south = atol(toks);
+      toks = strtok(NULL, "|");
+      west = atol(toks);
+      #ifdef DEBUG
       printf("Leido: %ld|%s|%ld|%ld|%ld|%ld\n", id, name, north, east, south, west);
-#endif
-            space = space_create(id);
-            if (space != NULL) {
-                space_set_name(space, name);
-                space_set_north(space, north);
-                space_set_east(space, east);
-                space_set_south(space, south);
-                space_set_west(space, west);
-                game_add_space(game, space);
-            }
-        }
+      #endif
+      space = space_create(id);
+      if (space != NULL) {
+        space_set_name(space, name);
+        space_set_north(space, north);
+        space_set_east(space, east);
+        space_set_south(space, south);
+        space_set_west(space, west);
+        game_add_space(game, space);
+      }
     }
+  }
 
-    if (ferror(file)) {
-        status = ERROR;
-    }
+  if (ferror(file)) {
+    status = ERROR;
+  }
 
-    fclose(file);
+  fclose(file);
 
-    return status;
-}
-
-STATUS game_load_objects(Game* game, char* filename) {
-    FILE* file = NULL;
-    char line[WORD_SIZE] = "";
-    char name[WORD_SIZE] = "";
-    char* toks = NULL;
-    Id id, id_space = NO_ID;
-    Object* object = NULL;
-    STATUS status = OK;
-
-    if (!filename) {
-        return ERROR;
-    }
-
-    file = fopen(filename, "r");
-    if (file == NULL) {
-        return ERROR;
-    }
-
-    while (fgets(line, WORD_SIZE, file)) {
-        if (strncmp("#o:", line, 3) == 0) {
-            toks = strtok(line + 3, "|");
-            id = atol(toks);
-            toks = strtok(NULL, "|");
-            strcpy(name, toks);
-
-#ifdef DEBUG
-      printf("Leido: %ld|%s\n", id, name);
-#endif
-
-            object = object_create(id, name);
-            if (object != NULL) {
-                game_add_object(game, id);
-            }
-        }
-    }
-
-    if (ferror(file)) {
-        status = ERROR;
-    }
-
-    fclose(file);
-
-    return status;
+  return status;
 }
