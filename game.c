@@ -361,8 +361,10 @@ void game_callback_drop(Game* game){
   Space* space;
 
   space_id = game_get_player_location(game);
+  if(space_id == NO_ID) return;
 
   space = game_get_space(game, space_id);
+  if(!space) return ;
 
   space_add_object(space, 2);
   player_set_object(game->player, NO_ID);
