@@ -1,16 +1,9 @@
 /**
 * @brief Implementa la interfaz del juego y todas las funciones de los comandos.
-* Hemos eliminado game_load_spaces, porque lo hemos añadido a game_reader, y hemos hecho púplica
-* game_add_spaces.
-* Hemos cambiado la estructura de game para que apunte directamente a un objeto y a un jugador, y con ello
-* también hemos cambiado las funciones necesarias.
-* Hemos añadido las funciones pick y drop para que le jugador pueda coger un objeto y dejarlo en otra casilla.
-* Se ha añadido la función jump para que se salte de oca en oca.
-*
-*
+* Hemos añadido la funcion game_add_object
 * @file game.c
 * @author Victoria Pelayo e Ignacio Rabuñal
-* @version 1.1
+* @version 2.0
 * @date 03-10-2017
 * @copyright GNU Public License
 */
@@ -18,9 +11,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
 #include "game_reader.h"
 
-#define N_CALLBACK 7
+#define N_CALLBACK 9
 
 /**
 Define the function type for the callbacks
@@ -36,7 +30,9 @@ void game_callback_next(Game* game);
 void game_callback_back(Game* game);
 void game_callback_pick(Game* game);
 void game_callback_drop(Game* game);
-void game_callback_jump(Game* game);
+void game_callback_left(Game* game);
+void game_callback_right(Game* game);
+void game_callback_die(Game* game);
 
 static callback_fn game_callback_fn_list[N_CALLBACK]={
   game_callback_unknown,
@@ -45,7 +41,9 @@ static callback_fn game_callback_fn_list[N_CALLBACK]={
   game_callback_back,
   game_callback_pick,
   game_callback_drop,
-  game_callback_jump
+  game_callback_left,
+  game_callback_right,
+  game_callback_die
 };
 
 /**
@@ -63,16 +61,25 @@ Game interface implementation
 STATUS game_create(Game* game) {
   int i;
   Object *obj;
+
   for (i = 0; i < MAX_SPACES; i++) {
     game->spaces[i] = NULL;
   }
 
+  game->die = die_create(1);
+
   game->player = player_create(1,"jugador");
+
   game->objects = set_create();
+
   obj = object_create(2, "objeto");
+
   set_add_element(game->objects, 2);
+
   object_destroy(obj);
-  game->last_cmd = NO_CMD;
+
+  game->last_cmd = (Command*)malloc(sizeof(Command));
+
   return OK;
 }
 
@@ -101,7 +108,8 @@ STATUS game_destroy(Game* game) {
 
   player_destroy (game->player);
   set_destroy(game->objects);
-
+  die_destroy(game->die);
+  free(game->last_cmd);
   return OK;
 }
 
@@ -124,6 +132,13 @@ STATUS game_add_space(Game* game, Space* space) {
   game->spaces[i] = space;
 
   return OK;
+}
+
+STATUS game_add_object(Game* game, Object* object){
+  if (object == NULL)
+    return ERROR;
+
+  return set_add_element(game->objects, object_get_id(object));
 }
 
 /**
@@ -222,14 +237,14 @@ Id game_get_object_location(Game* game, Id id_object) {
 }
 
 
-STATUS game_update(Game* game, T_Command cmd) {
-  game->last_cmd = cmd;
-  (*game_callback_fn_list[cmd])(game);
+STATUS game_update(Game* game, Command cmd) {
+  game->last_cmd->command = cmd.command;
+  (*game_callback_fn_list[cmd.command])(game);
   return OK;
 }
 
 
-T_Command game_get_last_command(Game* game){
+Command* game_get_last_command(Game* game){
   return game->last_cmd;
 }
 
@@ -353,6 +368,8 @@ void game_callback_pick(Game* game){
 
   player_set_object (game->player, 2);
   space_del_object(space, 2);
+
+  space = NULL;
 }
 
 
@@ -360,7 +377,6 @@ void game_callback_pick(Game* game){
 *@brief Dejamos una objeto en la casilla que estamos. Solo se puede hacer si el jugador tenía un objeto y si no hay otro objeto en la casilla.
 *@param game juego que se está jugando.
 */
-
 
 void game_callback_drop(Game* game){
 
@@ -371,7 +387,8 @@ void game_callback_drop(Game* game){
   if(space_id == NO_ID) return;
 
   space = game_get_space(game, space_id);
-  if(!space) return ;
+  if(!space) return;
+  space = NULL;
 
   if(player_get_object(game->player) == NO_ID) return;
 
@@ -380,12 +397,11 @@ void game_callback_drop(Game* game){
 
 }
 
-
 /**
-*@brief Si estamos en una oca salta a la siguiente, si no, no hace nada.
-*@param game juego que se está jugando.
+*@brief Salta a la casilla de la derecha, si tiene.
+*@param game juego que se esta jugando.
 */
-void game_callback_jump(Game* game){
+void game_callback_right(Game* game){
   int i = 0;
   Id current_id = NO_ID, current_id2 = NO_ID;
   Id space_id = NO_ID;
@@ -409,5 +425,53 @@ void game_callback_jump(Game* game){
         game_set_player_location(game,current_id);
       }
     }
+  }
+}
+
+/**
+*@brief Salta a la casilla de la izquiera, si tiene.
+*@param game juego que se esta jugando.
+*/
+void game_callback_left(Game* game){
+  int i = 0;
+  Id current_id = NO_ID, current_id2 = NO_ID;
+  Id space_id = NO_ID;
+
+  space_id = game_get_player_location(game);
+  if (space_id == NO_ID) {
+    return;
+  }
+
+  for (i = 0; i < MAX_SPACES && game->spaces[i] != NULL; i++) {
+    current_id = space_get_id(game->spaces[i]);
+    if (current_id == space_id) {
+      current_id = space_get_west (game->spaces[i]);
+      if (current_id == NO_ID) return;
+      else{
+        current_id2 = space_get_east(game_get_space(game,current_id));
+
+        /** Comprueba que las ocas estén "conectadas"*/
+
+        if (current_id2 != space_id) return;
+        game_set_player_location(game,current_id);
+      }
+    }
+  }
+}
+
+
+/**
+*@brief lanza el dado
+*@param game juego que se esta jugando
+*/
+void game_callback_die(Game* game){
+  int num;
+
+  if (!game || !game->die) return;
+
+  num = die_roll(game->die, getpid());
+
+  if ( num == -1){
+    return;
   }
 }

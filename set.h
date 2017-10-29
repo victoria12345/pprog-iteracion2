@@ -47,7 +47,6 @@ STATUS set_del_element(Set* set, Id id_element);
 
 int get_position_element(Set* set, Id id_element);
 Id* set_get_elements(Set* set);
-BOOL element_in_set(Set* set, Id id_element);
 int n_set_elements(Set* set);
 STATUS set_print(Set* set);
 

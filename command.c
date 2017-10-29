@@ -13,33 +13,66 @@
 #include "command.h"
 
 /** */
-#define CMD_LENGHT 30
-#define N_CMD 8
 
-char *cmd_to_str[N_CMD] = {"No command", "Unknown", "Quit", "Next", "Back", "Pick", "Drop","Jump"};
+#define N_CMD 9
 
 
 
-T_Command get_user_input(){
-  T_Command cmd = NO_CMD;
-  char input[CMD_LENGHT] = "";
 
-  if (scanf("%s", input) > 0){
-    if (!strcmp(input, "q") || !strcmp(input, "quit")){
-      cmd = QUIT;
+char *cmd_to_str[N_CMD] = {"No command", "Unknown", "Quit", "Next", "Back", "Pick", "Drop","Left", "Right"};
+
+
+
+Command get_user_input(){
+  int i, j;
+  Command cmd;
+  char input_cmd[CMD_LENGHT] = "";
+  char input_obj[CMD_LENGHT] = "";
+  char total_input[CMD_LENGHT]="";
+
+  if(scanf("%s", total_input) > 0){
+    for(i = 0; i < 4 ; i++){
+      input_cmd[i] = total_input[i];
     }
-    else if (!strcmp(input, "n") || !strcmp(input, "next")){
-      cmd = NEXT;
-    }else if (!strcmp(input, "b") || !strcmp(input, "back")){
-      cmd = BACK;
-    }else if (!strcmp(input, "p") || !strcmp(input, "pick")){
-      cmd = PICK;
-    }else if (!strcmp(input, "d") || !strcmp(input, "drop")){
-      cmd = DROP;
-    }else if (!strcmp(input, "j") || !strcmp(input, "jump")){
-      cmd = JUMP;
-    }else{cmd = UNKNOWN;
+
+    if(total_input[5] != '\0'){
+      for(i = 5, j = 0; i != '\0'; i++, j++){
+        input_obj[j] = total_input[i];
+      }
     }
   }
+
+
+
+  if (!strcmp(input_cmd, "q") || !strcmp(input_cmd, "quit")){
+    cmd.command = QUIT;
+  }
+  else if (!strcmp(input_cmd, "n") || !strcmp(input_cmd, "next")){
+    cmd.command = NEXT;
+  }else if (!strcmp(input_cmd, "b") || !strcmp(input_cmd, "back")){
+    cmd.command = BACK;
+  }else if (!strcmp(input_cmd, "p") || !strcmp(input_cmd, "pick")){
+    cmd.command = PICK;
+
+    if(!strcmp(input_obj, "*")){
+      strcpy(cmd.obj, "*");
+    }else if(!strcmp(input_obj, "^_^")){
+      strcpy(cmd.obj, "^_^");
+    }else if(!strcmp(input_obj, "._.")){
+      strcpy(cmd.obj, "._.");
+    }else if(!strcmp(input_obj, "%%")){
+      strcpy(cmd.obj, "%%");
+    }
+  }else if (!strcmp(input_cmd, "d") || !strcmp(input_cmd, "drop")){
+    cmd.command = DROP;
+  }else if (!strcmp(input_cmd, "l") || !strcmp(input_cmd, "left")){
+    cmd.command = LEFT;
+
+  }else if (!strcmp(input_cmd, "r") || !strcmp(input_cmd, "rigt")){
+      cmd.command = RIGT;
+  }else{
+    cmd.command = UNKNOWN;
+  }
+
   return cmd;
 }

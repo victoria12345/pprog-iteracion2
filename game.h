@@ -14,6 +14,7 @@
 
 #include "command.h"
 #include "space.h"
+#include "die.h"
 
 
 /**
@@ -21,10 +22,11 @@
 * Se define la estructura de juego
 */
 typedef struct _Game{
-  Player *player;
-  Set *objects;
-  Space *spaces[MAX_SPACES + 1];
-  T_Command last_cmd;
+  Player *player;  /*!< jugador */
+  Set *objects;  /*!< set de fichas */
+  Space *spaces[MAX_SPACES + 1];  /*!< casillas */
+  Command *last_cmd;  /*!< ultimo comando */
+  Die* die;  /*!< dado */
 } Game;
 
 
@@ -49,7 +51,7 @@ STATUS game_create_from_file(Game* game, char* filename);
 *@param cmd comando introducido por el jugador.
 *@return OK si la función se ha realizado correctamente y ERROR si no ha sido así.
 */
-STATUS game_update(Game* game, T_Command cmd);
+STATUS game_update(Game* game, Command cmd);
 
 /**
 *@brief destruye el juego.
@@ -105,7 +107,7 @@ Id     game_get_object_location(Game* game, Id id_object);
 *@param game juego que contiene el comando.
 *@return game->last_cmd último comando que se ha introducido en el juego.
 */
-T_Command game_get_last_command(Game* game);
+Command* game_get_last_command(Game* game);
 
 /**
 *@brief añade un espacio(casilla) al juego.
@@ -114,5 +116,13 @@ T_Command game_get_last_command(Game* game);
 *@return OK si se ha añadido correctamente y ERROR si no ha sido así.
 */
 STATUS game_add_space(Game* game, Space* space);
+
+/**
+*@brief añade un objeto(ficha)) al juego.
+*@param game puntero a game al que se le va a añadir una ficha.
+*@param object puntero a object, la ficha que se va a añadir
+*@return OK si se ha añadido correctamente y ERROR si no ha sido así.
+*/
+STATUS game_add_object(Game* game, Object* object);
 
 #endif

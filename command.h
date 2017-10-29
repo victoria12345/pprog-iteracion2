@@ -1,4 +1,4 @@
-/** 
+/**
 * @brief Implementa el interpretador de comandos
 *
 * @file command.h
@@ -10,9 +10,8 @@
 
 #ifndef COMMAND_H
 #define COMMAND_H
+#define CMD_LENGHT 30
 
-
-/** */
 typedef enum enum_Command {
   NO_CMD = -1,
   UNKNOWN,
@@ -21,12 +20,24 @@ typedef enum enum_Command {
   BACK,
   PICK,
   DROP,
-  JUMP} T_Command;
+  LEFT,
+  RIGT} T_Command;
+
+struct _Command {
+  T_Command command;
+  char obj[CMD_LENGHT + 1];
+
+};
+
+
+typedef struct _Command Command;
+/** */
+
 
   /*
   * @brief interpreta el comando
   * @return cmd el comando leído
   */
-  T_Command get_user_input();
+Command get_user_input();
 
   #endif

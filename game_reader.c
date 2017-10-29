@@ -70,3 +70,54 @@ STATUS game_load_spaces(Game* game, char* filename) {
 
   return status;
 }
+
+STATUS game_load_objects(Game* game, char* filename) {
+    FILE* file = NULL;
+    char line[WORD_SIZE] = "";
+    char name[WORD_SIZE] = "";
+    char* toks = NULL;
+    Id id, id_space = NO_ID;
+    Object* object = NULL;
+    Space* space = NULL;
+    STATUS status = OK;
+
+    if (!filename) {
+        return ERROR;
+    }
+
+    file = fopen(filename, "r");
+    if (file == NULL) {
+        return ERROR;
+    }
+
+    while (fgets(line, WORD_SIZE, file)) {
+        if (strncmp("#o:", line, 3) == 0) {
+            toks = strtok(line + 3, "|");
+            id = atol(toks);
+            toks = strtok(NULL, "|");
+            strcpy(name, toks);
+            toks = strtok(NULL, "|");
+            id_space = atol(toks);
+
+#ifdef DEBUG
+      printf("Leido: %ld|%s\n", id, name);
+#endif
+
+            object = object_create(id, name);
+            if (object != NULL) {
+                space = game_get_space(game, id_space);
+                space_add_object(space, id);
+                game_add_object(game, object);
+                space = NULL;
+            }
+        }
+    }
+
+    if (ferror(file)) {
+        status = ERROR;
+    }
+
+    fclose(file);
+
+    return status;
+}
