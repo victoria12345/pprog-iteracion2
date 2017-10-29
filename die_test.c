@@ -1,14 +1,27 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <unistd.h>
 #include "die.h"
 
-void main(){
-
+int main(){
+  int i;
+  
   Die *die;
 
   die = die_create(1);
-  die_roll(die, getpid());
-  die_print(die);
-  die_destroy(die);
 
+  for (i = 0; i<10; i++){
+
+    printf("%d", i);
+
+    die_roll(die, getpid());
+
+    die_print(die);
+
+    printf("\n");
+  }
+
+  die_destroy(die);
+  
+  return 0;
 }
