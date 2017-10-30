@@ -40,4 +40,7 @@ typedef struct _Command Command;
   */
 Command get_user_input();
 
+
+T_Command command_get_action(Command *cmd);
+
   #endif

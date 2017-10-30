@@ -16,14 +16,14 @@
 #include "space.h"
 #include "die.h"
 
-
+#define MAX_OBJECTS (4*MAX_SPACES)
 /**
 *@brief game
 * Se define la estructura de juego
 */
 typedef struct _Game{
   Player *player;  /*!< jugador */
-  Set *objects;  /*!< set de fichas */
+  Object *objects[MAX_OBJECTS + 1];  /*!< set de fichas */
   Space *spaces[MAX_SPACES + 1];  /*!< casillas */
   Command *last_cmd;  /*!< ultimo comando */
   Die* die;  /*!< dado */
@@ -43,7 +43,7 @@ STATUS game_create(Game* game);
 *@param filename  fichero desde el que se lee.
 *@return OK si se ha creado bien y ERROR si no ha sido así.
 */
-STATUS game_create_from_file(Game* game, char* filename);
+STATUS game_create_from_file(Game* game, char* filename_spaces, char* filename_objects);
 
 /**
 *@brief llama a la función correspondiente para ejecutar el comando del juego. Actualiza el último comando del juego a cmd.
@@ -51,7 +51,7 @@ STATUS game_create_from_file(Game* game, char* filename);
 *@param cmd comando introducido por el jugador.
 *@return OK si la función se ha realizado correctamente y ERROR si no ha sido así.
 */
-STATUS game_update(Game* game, Command cmd);
+STATUS game_update(Game* game, Command *cmd);
 
 /**
 *@brief destruye el juego.
@@ -107,7 +107,7 @@ Id     game_get_object_location(Game* game, Id id_object);
 *@param game juego que contiene el comando.
 *@return game->last_cmd último comando que se ha introducido en el juego.
 */
-Command* game_get_last_command(Game* game);
+T_Command game_get_last_command(Game* game);
 
 /**
 *@brief añade un espacio(casilla) al juego.

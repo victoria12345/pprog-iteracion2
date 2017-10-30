@@ -19,7 +19,7 @@ struct _Set{
 
 
 Set* set_create(){
-  Set *newSet;
+  Set *newSet = NULL;
   newSet = (Set*) malloc(sizeof(Set));
   if( !newSet ) return NULL;
 

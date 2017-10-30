@@ -14,7 +14,7 @@
 
 /** */
 
-#define N_CMD 9
+#define N_CMD 10
 
 
 
@@ -75,4 +75,9 @@ Command get_user_input(){
   }
 
   return cmd;
+}
+
+
+T_Command command_get_action(Command *cmd){
+  return cmd->command;
 }

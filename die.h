@@ -11,6 +11,7 @@
 #ifndef DIE_H
 #define DIE_H
 #include "types.h"
+#include <unistd.h>
 
 typedef struct _Die Die;
 

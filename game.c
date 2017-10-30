@@ -1,28 +1,35 @@
 /**
-* @brief Implementa la interfaz del juego y todas las funciones de los comandos.
-* Hemos añadido la funcion game_add_object
-* @file game.c
-* @author Victoria Pelayo e Ignacio Rabuñal
-* @version 2.0
-* @date 03-10-2017
-* @copyright GNU Public License
-*/
+ * @brief Implementa la interfaz del juego y todas las devoluciones de llamada asociadas para cada comando
+ *
+ * @file game.c
+ * @author Profesores PPROG
+ * @version 3.0
+ * @date 13-01-2015
+         24-09-2017: Corregir el estilo de programación y documentación
+         30-09-2017: Creacion de las funciones para los comandos pick,drop y jump
+         9-10-2017: Modificacion del modulo game para añadir el dado y el puntero a un array de elementos
+ * @copyright GNU Public License
+ */
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <unistd.h>
-#include "game_reader.h"
 
-#define N_CALLBACK 9
+
+#include "game_reader.h"
+#include "game.h"
+
+#define N_CMD 10
 
 /**
-Define the function type for the callbacks
+ * @biref Define el tipo de funcion por las llamadas
+ * Define the function type for the callbacks
 */
 typedef void (*callback_fn)(Game* game);
 
 /**
-List of callbacks for each command in the game
+ * @brief Lista de llamadas para cada comando en el juego
+ * List of callbacks for each command in the game
 */
 void game_callback_unknown(Game* game);
 void game_callback_quit(Game* game);
@@ -32,72 +39,91 @@ void game_callback_pick(Game* game);
 void game_callback_drop(Game* game);
 void game_callback_left(Game* game);
 void game_callback_right(Game* game);
-void game_callback_die(Game* game);
+void game_callback_roll(Game* game);
 
-static callback_fn game_callback_fn_list[N_CALLBACK]={
-  game_callback_unknown,
-  game_callback_quit,
-  game_callback_next,
-  game_callback_back,
-  game_callback_pick,
-  game_callback_drop,
-  game_callback_left,
-  game_callback_right,
-  game_callback_die
+static callback_fn game_callback_fn_list[N_CMD]={
+    game_callback_unknown,
+    game_callback_quit,
+    game_callback_next,
+    game_callback_back,
+    game_callback_pick,
+    game_callback_drop,
+    game_callback_left,
+    game_callback_right,
+    game_callback_roll
 };
 
 /**
-Private functions
+ * @brief Funciones privadas
 */
+
 Id     game_get_space_id_at(Game* game, int position);
 STATUS game_set_player_location(Game* game, Id id);
-STATUS game_set_object_location(Game* game, Id id_space, Id id_object);
+int    game_get_object_num(Game* game);
 
 /**
-Game interface implementation
-*/
-
+ * @brief Crea la interfaz del juego
+ *  game_create crea el juego, para ello inicializa todos sus espacios a NULL,
+ *  inicializa el jugador, el comando, el dado y todos los objetos del juego.
+ *
+ * @param game puntero no nulo tipo Game
+ * @return devuelve OK si se ha creado correctamente la interfaz del juego
+ */
 
 STATUS game_create(Game* game) {
   int i;
-  Object *obj;
 
   for (i = 0; i < MAX_SPACES; i++) {
     game->spaces[i] = NULL;
   }
 
+  game->player = player_create(1, "jugador");
+  game->last_cmd = NULL;
   game->die = die_create(1);
 
-  game->player = player_create(1,"jugador");
-
-  game->objects = set_create();
-
-  obj = object_create(2, "objeto");
-
-  set_add_element(game->objects, 2);
-
-  object_destroy(obj);
-
-  game->last_cmd = (Command*)malloc(sizeof(Command));
+  for (i = 0; i < MAX_SPACES; i++) {
+    game->objects[i] = NULL;
+  }
 
   return OK;
 }
 
 
-STATUS game_create_from_file(Game* game, char* filename) {
+/**
+ * @brief crea un juego a partir de un archivo, crea el juego, carga el espacio y situa al jugador y al objeto en la posicion 0 del juego
+ *
+ * @param game puntero no nulo tipo Game
+ * @param filename nombre del archivo a partir del cual se creara el juego
+
+ * @return devuelve ERROR en caso de que no se cree correctamente el juego o en caso de que los espacios no se cargen correctamente. Devuelve OK si todo ha ido buen
+ *
+ */
+
+STATUS game_create_from_file(Game* game, char* filename_spaces, char* filename_objects) {
 
   if (game_create(game) == ERROR)
-  return ERROR;
+    return ERROR;
 
-  if (game_load_spaces(game, filename) == ERROR)
-  return ERROR;
+  if (game_load_spaces(game, filename_spaces) == ERROR)
+    return ERROR;
+
+  if (game_load_objects(game, filename_objects) == ERROR)
+    return ERROR;
 
   game_set_player_location(game, game_get_space_id_at(game, 0));
-  game_set_object_location(game, game_get_space_id_at(game, 0), 2);
 
   return OK;
 }
 
+
+
+/**
+ * @brief destruye el juego, para ello tiene que destruir los espacios que forman el juego llamando a la funcion space_destroy
+ *
+ * @param game puntero no nulo tipo Game
+ * @return devuelve OK si el juego se ha destruido correctamente. Devuelve ERROR si no se ha destruido correctamente.
+ *
+ */
 
 STATUS game_destroy(Game* game) {
   int i = 0;
@@ -106,218 +132,371 @@ STATUS game_destroy(Game* game) {
     space_destroy(game->spaces[i]);
   }
 
-  player_destroy (game->player);
-  set_destroy(game->objects);
+  for (i = 0; (i < MAX_SPACES) && (game->objects[i] != NULL); i++) {
+    object_destroy(game->objects[i]);
+  }
+
+  player_destroy(game->player);
   die_destroy(game->die);
-  free(game->last_cmd);
+  game->last_cmd = NULL;
+
   return OK;
 }
 
 
+
+/**
+ * @brief Añande un espacio al juego
+ *
+ * @param game puntero no nulo tipo Game
+ * @param space puntero tipo Space
+ * @return devuelve ERROR si la funcion no recibe el espacio como parametro de entrada. Devuelve error si se pasa del maximo de espacios. Devuelve OK si todo ha ido correctamente.
+
+ */
+
 STATUS game_add_space(Game* game, Space* space) {
   int i = 0;
 
-  if (space == NULL) {
+  if (space == NULL)
     return ERROR;
-  }
+
 
   while ( (i < MAX_SPACES) && (game->spaces[i] != NULL)){
     i++;
   }
 
-  if (i >= MAX_SPACES) {
+  if (i >= MAX_SPACES)
     return ERROR;
-  }
+
 
   game->spaces[i] = space;
 
   return OK;
 }
 
-STATUS game_add_object(Game* game, Object* object){
+
+/**
+ * @brief Añande un espacio al juego
+ *
+ * @param game puntero no nulo tipo Game
+ * @param space puntero tipo Space
+ * @return devuelve ERROR si la funcion no recibe el espacio como parametro de entrada. Devuelve error si se pasa del maximo de espacios. Devuelve OK si todo ha ido correctamente.
+
+ */
+
+STATUS game_add_object(Game* game, Object* object) {
+  int i = 0;
+
   if (object == NULL)
     return ERROR;
 
-  return set_add_element(game->objects, object_get_id(object));
+
+  while ( (i < MAX_SPACES) && (game->objects[i] != NULL)){
+    i++;
+  }
+
+  if (i >= MAX_SPACES)
+    return ERROR;
+
+
+  game->objects[i] = object;
+
+  return OK;
 }
 
-/**
-*@brief devuelve el id del espacio que ocupa la posicion pasada en la cadena de casillas del juego.
-*@param game juego que contiene las casillas.
-*@param position posicion de la cadena de spaces del espacio cuyo id queremos saber.
-*@return space_get_id(game->spaces[position]) id del espacio que queríamos saber.
-*/
-Id game_get_space_id_at(Game* game, int position) {
 
-  if (position < 0 || position >= MAX_SPACES) {
+/**
+ * @brief Devuelve la id del enésimo espacio de un juego
+ *
+ * @param game puntero no nulo tipo Game
+ * @param int numero entero que nos indica la posicion del espacio a considerar
+ * @return devuelve el id del espacio pedido
+ *
+ */
+
+Id game_get_space_id_at(Game* game, int position) {
+  if (position < 0 || position >= MAX_SPACES)
     return NO_ID;
-  }
 
   return space_get_id(game->spaces[position]);
 }
 
 
+/**
+ * @brief nos permite obtener el espacio del juego con cierto id
+ *
+ * @param game puntero no nulo tipo Game
+ * @param id indica la posicion
+ * @return devuelve NULL: si la funcion no recibe ninguna posición o si no se ha podido obtener bien el espacio.
+ * Devuelve el espacio si se ha obtenido correctamente
+ *
+ */
+
 Space* game_get_space(Game* game, Id id){
   int i = 0;
 
-  if (id == NO_ID) {
+  if (id == NO_ID)
     return NULL;
-  }
 
   for (i = 0; i < MAX_SPACES && game->spaces[i] != NULL; i++) {
-    if (id == space_get_id(game->spaces[i])){
+    if (id == space_get_id(game->spaces[i]))
       return game->spaces[i];
-    }
   }
 
   return NULL;
 }
 
-/**
-*@brief cambia la localización del jugador.
-*@param game juego que contiene al jugador.
-*@param id del espacio nuevo en el que va a estar el jugador.
-*@return OK si la función se ha realizado correctamente y ERROR si no ha sido así.
-*/
-STATUS game_set_player_location(Game* game, Id id) {
 
-  if (id == NO_ID) {
-    return ERROR;
+/**
+ * @brief nos permite obtener el objeto del juego con cierto id
+ *
+ * @param game puntero no nulo tipo Game
+ * @param id indica la posicion
+ * @return devuelve NULL: si la funcion no recibe ninguna posición o si no se ha podido obtener bien el objeto.
+ * Devuelve el objeto si se ha obtenido correctamente
+ *
+ */
+
+Object* game_get_object(Game* game, Id id){
+  int i = 0;
+
+  if (id == NO_ID)
+    return NULL;
+
+
+  for (i = 0; i < MAX_OBJECTS && game->objects[i] != NULL; i++) {
+    if (id == object_get_id(game->objects[i]))
+      return game->objects[i];
   }
 
-  player_set_location(game->player,id); return OK;
+  return NULL;
 }
 
+
 /**
-*@brief cambia la localización del objeto.
-*@param game juego que contiene al objeto.
-*@param id del espacio nuevo en el que va a estar el objeto.
-*@return OK si la función se ha realizado correctamente y ERROR si no ha sido así.
-*/
-STATUS game_set_object_location(Game* game, Id id_space, Id id_object) {
-  Space *space;
-  int i;
+ * @brief cambia la localización/posicion del jugador
+ *
+ * @param game puntero no nulo tipo Game
+ * @param id indica una posicion
+ * @return devuelve ERROR si la funcion no ha recibido ninguna posicion (id)
+ *
+ */
 
-  space = game_get_space (game, id_space);
+STATUS game_set_player_location(Game* game, Id id) {
+  if (id == NO_ID)
+    return ERROR;
 
-  for(i = 0; i < MAX_SPACES; i++){
-
-    if(object_in_space(game->spaces[i], id_object) == TRUE)
-      if(space_del_object(game->spaces[i], id_object) == ERROR)
-        return ERROR;
-  }
-
-  if (!space)
-  return ERROR;
-  space_add_object(space, id_object);
+  player_set_location(game->player, id);
 
   return OK;
 }
 
+
+/**
+ * @brief cambia la localizacion/posicion del objeto
+ *
+ *
+ * @param game puntero no nulo tipo Game
+ * @param id indica una posicion
+ * @return devuelve error si la funcion no ha recibido ninguna posicion(id)
+ *
+ */
+
+STATUS game_set_object_location(Game* game, Id space_id, Id object_id) {
+  int id_aux;
+
+  if (space_id == NO_ID || object_id == NO_ID)
+    return ERROR;
+
+  id_aux = game_get_object_location(game, object_id);
+
+  space_add_object(game_get_space(game, space_id), object_id);
+  space_del_object(game_get_space(game, id_aux), object_id);
+
+  return OK;
+}
+
+
+/**
+ * @brief nos permite obtener la localizacion/posicion del jugador
+ *
+ * @param game puntero no nulo tipo Game
+ * @return devuelve la localizacion del jugador
+ *
+ */
 
 Id game_get_player_location(Game* game) {
   return player_get_location(game->player);
 }
 
 
-Id game_get_object_location(Game* game, Id id_object) {
+
+/**
+ * @brief nos permite obtener la localizacion/posicion del objeto
+ *  lo que hacemos es obtener el id del espacio (id_aux) para que dentro del bucle podamos comprobar si el objeto se encuentra
+ *  en el espacio, lo hacemos mediante space_check_object que nos comprueba si el objecto esta en el set.
+ *
+ * @param game puntero no nulo tipo Game
+ * @param object_id id del objeto a obtener la localizacion
+ * @return devuelve el esapcio donde se encuentra el objeto
+ *
+ */
+
+ Id game_get_object_location(Game* game, Id object_id) {
+   int i;
+   Id id_aux;
+
+   if (!game || object_id == NO_ID)
+     return NO_ID;
+
+   if (player_get_object(game->player) == object_id)
+     return player_get_location(game->player);
+
+   for (i=0; i < MAX_SPACES && game->spaces[i] != NULL; i++){
+     id_aux = game_get_space_id_at(game, i);
+     if(object_in_space(game_get_space(game, id_aux), object_id) == TRUE)
+       return id_aux;
+   }
+
+   return NO_ID;
+ }
+
+
+/**
+ * @brief Devuelve el número de objetos en el juego
+ *
+ * @param game puntero al juego
+ * @return int número de objetos en el juego
+ */
+
+int game_get_object_num(Game* game) {
   int i;
-  Id current_id;
-
-  if (player_get_object(game->player) == id_object)
-  return player_get_location(game->player);
-
-  for (i = 0; i < MAX_SPACES && game->spaces[i] != NULL; i++) {
-    current_id = space_get_id(game->spaces[i]);
-
-    if (object_in_space(game->spaces[i], id_object) == TRUE)
-    return current_id;
-  }
-  return NO_ID;
+  for(i = 0; i < MAX_OBJECTS && game->objects[i] != NULL; i++);
+  return (i+1);
 }
 
 
-STATUS game_update(Game* game, Command cmd) {
-  game->last_cmd->command = cmd.command;
-  (*game_callback_fn_list[cmd.command])(game);
-  return OK;
+/**
+ * @brief Actualiza el juego a través de un comando que recive como argumento de entrada
+ *
+ * @param game puntero no nulo tipo Game
+ * @param cmd comando que le indica la accion a realizar
+ * @return devuelve OK si se ha actualizado correctamente. Devuelve ERROR en caso de que no se haya podido actualizar como es debido
+ *
+ */
+
+STATUS game_update(Game* game, Command * cmd) {
+
+    game->last_cmd = cmd;
+
+    (*game_callback_fn_list[command_get_action(cmd)])(game);
+
+    return OK;
 }
 
 
-Command* game_get_last_command(Game* game){
-  return game->last_cmd;
+/**
+ * @brief obtiene el ultimo comando utilizado
+ *
+ * @param game puntero no nulo tipo Game
+ * @return devuelve el ultimo comando utilizado en el juego
+ *
+ */
+
+T_Command game_get_last_command(Game* game){
+
+    return command_get_action(game->last_cmd);
 }
 
+
+/**
+ * @brief imprime la apariencia del juego, para ello tiene que llamar a space_print que imprime el espacio
+ *
+ * @param game puntero no nulo tipo Game
+ *
+ */
 
 void game_print_data(Game* game) {
-  int i = 0;
+    int i = 0;
 
-  printf("\n\n-------------\n\n");
+    printf("\n\n-------------\n\n");
+    printf("=> Spaces: \n");
 
-  printf("=> Spaces: \n");
-  for (i = 0; i < MAX_SPACES && game->spaces[i] != NULL; i++) {
-    space_print(game->spaces[i]);
-  }
-  printf("=> Objects: \n");
-  set_print(game->objects);
-  printf("=> Player location: %ld\n", game_get_player_location(game));
-  printf("prompt:> ");
+    for (i = 0; i < MAX_SPACES && game->spaces[i] != NULL; i++) {
+        space_print(game->spaces[i]);
+    }
+
+    for (i = 0; i < game_get_object_num(game); i++) {
+      printf("=> %s location: %ld\n", object_get_name(game->objects[i]), game_get_object_location(game, object_get_id(game->objects[i])));
+    }
+
+    printf("=> Player location: %ld\n", game_get_player_location(game));
+    printf("prompt:> ");
 }
 
+
+
+/**
+ * @brief detecta si el juego se ha acabado
+ *
+ * @param game puntero tipo no nulo tipo Game
+ * @return devuelve FALSE
+ *
+ */
 
 BOOL game_is_over(Game* game) {
-  return FALSE;
+
+    return FALSE;
 }
 
 /**
-Callbacks implementation for each action
+ * @brief Implementacion de LLamadas para cada accion
 */
 
-
-/**
-*@brief No hace nada. Cuando el parámetro introducido por el usuario no es reconocido.
-*@param game juego que se está jugando.
-*/
 void game_callback_unknown(Game* game) {
 }
 
-/**
-*@brief No hace nada.Cuando el parámetro introducido por el usuario es quit.
-*@param game juego que se está jugando.
-*/
 void game_callback_quit(Game* game) {
 }
 
+
 /**
-*@brief Salta a la siguiente casilla.
-*@param game juego que se está jugando.
-*/
+ * @brief avanza el jugador a la siguiente casilla
+ *
+ * @param game puntero no nulo al juego a considerar
+ *
+ */
+
 void game_callback_next(Game* game) {
   int i = 0;
   Id current_id = NO_ID;
   Id space_id = NO_ID;
-
   space_id = game_get_player_location(game);
-  if (space_id == NO_ID) {
+
+  if (space_id == NO_ID)
     return;
-  }
 
   for (i = 0; i < MAX_SPACES && game->spaces[i] != NULL; i++) {
+
     current_id = space_get_id(game->spaces[i]);
+
     if (current_id == space_id) {
       current_id = space_get_south(game->spaces[i]);
-      if (current_id != NO_ID) {
+
         game_set_player_location(game, current_id);
-      }
       return;
     }
   }
 }
 
+
 /**
-*@brief Retrocede una casilla.
-*@param game juego que se está jugando.
-*/
+ * @brief retrocede el jugador a la casilla anterior
+ *
+ * @param game puntero no nulo al juego a considerar
+ *
+ */
+
 void game_callback_back(Game* game) {
   int i = 0;
   Id current_id = NO_ID;
@@ -325,153 +504,155 @@ void game_callback_back(Game* game) {
 
   space_id = game_get_player_location(game);
 
-  if (NO_ID == space_id) {
+  if (NO_ID == space_id)
     return;
-  }
 
   for (i = 0; i < MAX_SPACES && game->spaces[i] != NULL; i++) {
     current_id = space_get_id(game->spaces[i]);
+
     if (current_id == space_id) {
       current_id = space_get_north(game->spaces[i]);
-      if (current_id != NO_ID) {
+
+      if (current_id != NO_ID)
         game_set_player_location(game, current_id);
-      }
+
       return;
     }
   }
 }
 
-/**
-*@brief Coge el objeto, esto solo se puede hacer si el jugador no tenía ya otro objeto en la mano y si hay un objeto en la casilla que estamos.
-*@param game juego que se está jugando.
-*/
 
-void game_callback_pick(Game* game){
-  Id *objects;
-  Id space_id;
-  Space *space;
+/**
+ * @brief el jugador recoge un objeto
+ *
+ * @param game puntero no nulo al juego a considerar
+ *
+ */
+
+void game_callback_pick(Game* game) {
+  Id space_id = NO_ID;
 
   space_id = game_get_player_location(game);
 
-  if (space_id == NO_ID) return;
+  if (NO_ID == space_id || game_get_space(game, space_id) == NULL)
+    return;
 
-  space = game_get_space(game,space_id);
-  objects = space_get_object(space);
+  if (player_get_object(game->player) != NO_ID)
+  	return;
 
-  if (!space || objects[0] == NO_ID) return;
+  if(object_in_space(game_get_space(game, space_id), 1) == TRUE) {
+    space_del_object(game_get_space(game, space_id), 1);
+    player_set_object(game->player, 1);
+  }
 
-  if (player_get_object(game->player) != NO_ID) return;
-
-  if (game_get_object_location(game, 2) != space_id) return;
-
-  free(objects);
-
-  player_set_object (game->player, 2);
-  space_del_object(space, 2);
-
-  space = NULL;
+	return;
 }
 
 
 /**
-*@brief Dejamos una objeto en la casilla que estamos. Solo se puede hacer si el jugador tenía un objeto y si no hay otro objeto en la casilla.
-*@param game juego que se está jugando.
-*/
+ * @brief el jugador suelta un objeto
+ *
+ * @param game puntero no nulo al juego a considerar
+ *
+ */
 
-void game_callback_drop(Game* game){
-
-  Id space_id;
-  Space* space;
+void game_callback_drop(Game* game) {
+  Id space_id = NO_ID;
 
   space_id = game_get_player_location(game);
-  if(space_id == NO_ID) return;
 
-  space = game_get_space(game, space_id);
-  if(!space) return;
-  space = NULL;
+  if (NO_ID == space_id || game_get_space(game, space_id) == NULL)
+    return;
 
-  if(player_get_object(game->player) == NO_ID) return;
+  if (player_get_object(game->player) != 1)
+  	return;
 
-  space_add_object(space, 2);
+  space_add_object(game_get_space(game, space_id), 1);
   player_set_object(game->player, NO_ID);
 
-}
-
-/**
-*@brief Salta a la casilla de la derecha, si tiene.
-*@param game juego que se esta jugando.
-*/
-void game_callback_right(Game* game){
-  int i = 0;
-  Id current_id = NO_ID, current_id2 = NO_ID;
-  Id space_id = NO_ID;
-
-  space_id = game_get_player_location(game);
-  if (space_id == NO_ID) {
-    return;
-  }
-
-  for (i = 0; i < MAX_SPACES && game->spaces[i] != NULL; i++) {
-    current_id = space_get_id(game->spaces[i]);
-    if (current_id == space_id) {
-      current_id = space_get_east (game->spaces[i]);
-      if (current_id == NO_ID) return;
-      else{
-        current_id2 = space_get_west(game_get_space(game,current_id));
-
-        /** Comprueba que las ocas estén "conectadas"*/
-
-        if (current_id2 != space_id) return;
-        game_set_player_location(game,current_id);
-      }
-    }
-  }
-}
-
-/**
-*@brief Salta a la casilla de la izquiera, si tiene.
-*@param game juego que se esta jugando.
-*/
-void game_callback_left(Game* game){
-  int i = 0;
-  Id current_id = NO_ID, current_id2 = NO_ID;
-  Id space_id = NO_ID;
-
-  space_id = game_get_player_location(game);
-  if (space_id == NO_ID) {
-    return;
-  }
-
-  for (i = 0; i < MAX_SPACES && game->spaces[i] != NULL; i++) {
-    current_id = space_get_id(game->spaces[i]);
-    if (current_id == space_id) {
-      current_id = space_get_west (game->spaces[i]);
-      if (current_id == NO_ID) return;
-      else{
-        current_id2 = space_get_east(game_get_space(game,current_id));
-
-        /** Comprueba que las ocas estén "conectadas"*/
-
-        if (current_id2 != space_id) return;
-        game_set_player_location(game,current_id);
-      }
-    }
-  }
+	return;
 }
 
 
 /**
-*@brief lanza el dado
-*@param game juego que se esta jugando
-*/
-void game_callback_die(Game* game){
-  int num;
+ * @brief hace que vaya hacia la casilla de la derecha
+ *
+ * @param game puntero no nulo al juego a considerar
+ *
+ */
 
-  if (!game || !game->die) return;
+void game_callback_right(Game* game) {
 
-  num = die_roll(game->die, getpid());
+  Id space_id, space_east_id = NO_ID;
 
-  if ( num == -1){
+
+  space_id = game_get_player_location(game); /*!< conseguimos el espacio donde esta el jugador*/
+
+  if (NO_ID == space_id) /*!< si no tenemos espacio return*/
+    return;
+
+  /*!< ahora tengo que hacer que salte de casilla*/
+
+  space_east_id = space_get_east(game_get_space(game,space_id));
+  if( space_east_id != NO_ID) {
+    game_set_player_location(game,space_east_id);
     return;
   }
+
+  return;
+
+}
+
+
+
+/**
+ * @brief hace que vaya hacia la casilla de la izquierda
+ *
+ * @param game puntero no nulo al juego a considerar
+ *
+ */
+
+void game_callback_left(Game* game) {
+
+  Id space_id, space_west_id = NO_ID;
+
+  space_id = game_get_player_location(game); /*!< conseguimos el espacio donde esta el jugador*/
+
+
+  if (NO_ID == space_id) /*!< si no tenemos espacio return*/
+    return;
+
+    /*!< ahora tengo que hacer que salte de casilla*/
+
+  space_west_id = space_get_west(game_get_space(game,space_id));
+  if( space_west_id != NO_ID) {
+    game_set_player_location(game, space_west_id);
+    return;
+  }
+
+  return;
+
+}
+
+
+/**
+ * @brief hace que vaya hacia la casilla de la izquierda
+ *
+ * @param game puntero no nulo al juego a considerar
+ * @param die puntero no nulo al dado a considerar
+ *
+ */
+
+void game_callback_roll(Game* game) {
+  int value;
+
+  if (!game)
+    return;
+
+  value = die_roll(game->die, getpid());
+
+  if (value == -1)
+    return;
+
+  return;
 }
