@@ -70,7 +70,7 @@ void graphic_engine_paint_game(Graphic_engine *ge, Game *game){
     id_back = space_get_north(space_act);
     id_next = space_get_south(space_act);
 
-    if (game_get_object_location(game, 2) == id_back)
+    if (game_get_object_location(game, game->objects[0]) == id_back)
     obj='*';
     else
     obj=' ';
@@ -84,7 +84,7 @@ void graphic_engine_paint_game(Graphic_engine *ge, Game *game){
       sprintf(str, "        ^");
       screen_area_puts(ge->map, str);
     }
-    if (game_get_object_location(game, 2) == id_act)
+    if (game_get_object_location(game, game->objects[0]) == id_act)
     obj='*';
     else
     obj=' ';
@@ -100,7 +100,7 @@ void graphic_engine_paint_game(Graphic_engine *ge, Game *game){
       screen_area_puts(ge->map, str);
     }
 
-    if (game_get_object_location(game, 2) == id_next)
+    if (game_get_object_location(game, game->objects[0]) == id_next)
     obj='*';
     else
     obj=' ';
@@ -119,7 +119,7 @@ void graphic_engine_paint_game(Graphic_engine *ge, Game *game){
 
   /* Paint the in the description area */
   screen_area_clear(ge->descript);
-  if ((obj_loc = game_get_object_location(game, 2)) != NO_ID){
+  if ((obj_loc = game_get_object_location(game, game->objects[0])) != NO_ID){
     sprintf(str, "  Object location:%d", (int)obj_loc);
     screen_area_puts(ge->descript, str);
   }

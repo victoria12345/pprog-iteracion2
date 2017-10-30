@@ -21,7 +21,8 @@ typedef enum enum_Command {
   BACK,
   PICK,
   DROP,
-  JUMP} T_Command;
+  JUMP,
+  ROLL} T_Command;
 
   /*
   * @brief interpreta el comando

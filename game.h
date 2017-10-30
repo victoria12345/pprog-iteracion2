@@ -1,12 +1,12 @@
-/**
-* @brief Prototipo de las funciones de juego.
-*
-* @file game.h
-* @author Victoria Pelayo e Ignacio Rabunnal
-* @version 1.1
-* @date 24-09-2017
-* @copyright GNU Public License
-*/
+/** 
+ * @brief Prototipo de las funciones de juego.
+ * 
+ * @file game.h
+ * @author Victoria Pelayo e Ignacio Rabunnal
+ * @version 1.1
+ * @date 24-09-2017 
+ * @copyright GNU Public License
+ */
 
 
 #ifndef GAME_H
@@ -14,6 +14,8 @@
 
 #include "command.h"
 #include "space.h"
+#include "set.h"
+#include "die.h"
 
 
 /**
@@ -22,8 +24,9 @@
 */
 typedef struct _Game{
   Player *player;
-  Set *objects;
-  Space *spaces[MAX_SPACES + 1];
+  Object *objects[MAX_SPACES + 1];
+  Space* spaces[MAX_SPACES + 1];
+  Die* die;
   T_Command last_cmd;
 } Game;
 
@@ -60,7 +63,7 @@ STATUS game_destroy(Game* game);
 
 /**
 *@brief Devuelve FALSE siempre. Acaba el juego.
-*@param game juego que se acaba
+*@param game juego que se acaba 
 *@return FALSE.
 */
 BOOL   game_is_over(Game* game);
@@ -98,7 +101,7 @@ Id     game_get_player_location(Game* game);
 *@param game juego que contiene el objeto.
 *@return current_id id del espacio en el que se encuentra el objeto o NO_ID en caso de que no se encuentre.
 */
-Id     game_get_object_location(Game* game, Id id_object);
+Id     game_get_object_location(Game* game, Object* object);
 
 /**
 *@brief devuelve el último comando que se ha realizado.

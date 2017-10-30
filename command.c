@@ -14,9 +14,9 @@
 
 /** */
 #define CMD_LENGHT 30
-#define N_CMD 8
+#define N_CMD 9
 
-char *cmd_to_str[N_CMD] = {"No command", "Unknown", "Quit", "Next", "Back", "Pick", "Drop","Jump"};
+char *cmd_to_str[N_CMD] = {"No command", "Unknown", "Quit", "Next", "Back", "Pick", "Drop","Jump","Roll"};
 
 
 
@@ -38,7 +38,9 @@ T_Command get_user_input(){
       cmd = DROP;
     }else if (!strcmp(input, "j") || !strcmp(input, "jump")){
       cmd = JUMP;
-    }else{cmd = UNKNOWN;
+    }else if (!strcmp(input, "r") || !strcmp(input, "roll")){
+      cmd = ROLL;
+	}else{cmd = UNKNOWN;
     }
   }
   return cmd;

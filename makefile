@@ -5,8 +5,8 @@
 
 all: ocabas
 
-ocabas: game.o command.o space.o game_loop.o graphic_engine.o screen.o game_reader.o player.o object.o set.o
-	gcc -ansi -pedantic -Wall -g -o ocabas command.o space.o game_loop.o game.o graphic_engine.o screen.o game_reader.o player.o object.o set.o
+ocabas: game.o command.o space.o game_loop.o graphic_engine.o screen.o game_reader.o player.o object.o set.o die.o
+	gcc -ansi -pedantic -Wall -g -o ocabas command.o space.o game_loop.o game.o graphic_engine.o screen.o game_reader.o player.o object.o set.o die.o
 
 game.o: game.c game.h space.h
 	gcc -ansi -pedantic -Wall -g -c game.c
@@ -37,6 +37,9 @@ object.o: object.c object.h types.h
 
 set.o : set.c set.h types.h
 	gcc -ansi -Wall -g -c set.c
+
+die.o: die.c types.h die.h
+	gcc -c die.c
 
 die_test.o: die_test.c die.h
 	gcc -c die_test.c

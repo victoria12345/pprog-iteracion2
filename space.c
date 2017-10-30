@@ -187,7 +187,7 @@ Id space_get_west(Space* space) {
 
 Id* space_get_object(Space* space) {
   if (!space) {
-    return FALSE;
+    return NULL;
   }
   return set_get_elements(space->objects);
 }
