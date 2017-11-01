@@ -60,7 +60,7 @@ set_test: set.o set_test.o
 
 #comprimir
 dist:
-	tar -cvzf s1-cod_OcaBasicaIni-1.tgz *c *h makefile spaces.dat autores.txt
+	tar -cvzf s1-cod_OcaBasicaIni-2.tgz  *c *h makefile spaces.dat autores.txt objects.dat
 
 
 #limpieza
