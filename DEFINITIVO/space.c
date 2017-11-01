@@ -191,7 +191,7 @@ Id space_get_west(Space* space) {
 
 Id* space_get_object(Space* space) {
   if (!space) {
-    return FALSE;
+    return NULL;
   }
   return set_get_elements(space->objects);
 }
@@ -207,7 +207,7 @@ STATUS space_set_gdesc(Space* space,line lines, int pos){
   if(!space || !lines) return ERROR;
 
   strcpy(space->gdesc[pos], lines);
-  
+
   return OK;
 }
 
