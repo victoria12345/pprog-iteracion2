@@ -23,17 +23,17 @@ struct _Space {
   Id east; /*!< Id de la casilla que está al este */
   Id west; /*!< Id de la casilla que está al oeste */
   Set* objects; /*!< id del objeto que se encuentra en la casilla */
+  line gdesc[3]; /*! Descripcion grafica de la casilla */
 };
 
 
 Space* space_create(Id id) {
-
   Space *newSpace = NULL;
 
   if (id == NO_ID)
   return NULL;
 
-  newSpace = (Space *) malloc(sizeof (Space));
+  newSpace = (Space *) malloc(sizeof(Space));
 
   if (newSpace == NULL) {
     return NULL;
@@ -49,11 +49,15 @@ Space* space_create(Id id) {
 
   newSpace->objects = set_create();
 
+  strcpy(newSpace->gdesc[0], "       ");
+  strcpy(newSpace->gdesc[1], "       ");
+  strcpy(newSpace->gdesc[2], "       ");
   return newSpace;
 }
 
 
 STATUS space_destroy(Space* space) {
+
   if (!space) {
     return ERROR;
   }
@@ -187,18 +191,37 @@ Id space_get_west(Space* space) {
 
 Id* space_get_object(Space* space) {
   if (!space) {
-    return NULL;
+    return FALSE;
   }
   return set_get_elements(space->objects);
+}
+
+line* space_get_gdesc(Space* space){
+  if(!space) return NULL;
+
+  return space->gdesc;
+}
+
+STATUS space_set_gdesc(Space* space,line lines, int pos){
+
+  if(!space || !lines) return ERROR;
+
+  strcpy(space->gdesc[pos], lines);
+  
+  return OK;
 }
 
 
 STATUS space_print(Space* space) {
   Id idaux = NO_ID;
+  Id* ids;
+  int i;
 
   if (!space) {
     return ERROR;
   }
+
+  ids = space_get_object(space);
 
   fprintf(stdout, "--> Space (Id: %ld; Name: %s)\n", space->id, space->name);
 
@@ -230,11 +253,17 @@ STATUS space_print(Space* space) {
     fprintf(stdout, "---> No west link.\n");
   }
 
-  if (space_get_object(space)) {
+  if (!ids) {
     set_print(space->objects);
   } else {
     fprintf(stdout, "---> No object in the space.\n");
   }
+
+  fprintf(stdout,"Gdesc:\n");
+
+  for(i = 0; i<= 2; i++) fprintf(stdout,"%s", space->gdesc[i]);
+
+  free(ids);
 
   return OK;
 }

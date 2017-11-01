@@ -36,6 +36,13 @@ void die_destroy(Die *die);
 STATUS die_roll(Die *die, int semilla);
 
 /**
+*@brief devuelve el último número que salio
+*@param diee puntero al dado que queremos tirar.
+*@return int número último que salio
+*/
+int die_latest_roll(Die* die);
+
+/**
 *@brief imprime la información del dado por pantalla.
 *@param dice puntero al dado que queremos imprimir.
 *@return OK si el dado se imprime correctamente y ERROR si algo falla durante el proceso.

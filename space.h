@@ -15,11 +15,13 @@
 #include "object.h"
 #include "player.h"
 #include "set.h"
+#include <string.h>
 
 
 /** */
 #define MAX_SPACES 100
 #define FIRST_SPACE 1
+#define NUM_LINES 3
 
 /**
 *@brief casilla o espacio.
@@ -154,6 +156,21 @@ BOOL object_in_space(Space* space, Id id_object);
 *@return space->id_object id del objeto que se encuentra en la casilla.
 */
 Id* space_get_object(Space* space);
+
+/**
+*@brief desvuelve descripcion grafica de casilla.
+*@param space casilla cuya descripcion grafica queremos saber
+*@return Devuelve cadena de lineas
+*/
+line* space_get_gdesc(Space* space);
+
+/**
+*@brief c deambia descripcion grafica de casilla.
+*@param space casilla cuya descripcion grafica queremos cambiar
+*@param lines nueva descripcion grafica
+*@return Devuelve OK si se ha realizado correctamente y ERROR si no ha sido asi.
+*/
+STATUS space_set_gdesc(Space* space, line lines, int pos);
 
 /**
 *@brief imprime en la pantalla toda la información de una casilla.

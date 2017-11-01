@@ -12,6 +12,7 @@
 #define __GRAPHIC_ENGINE__
 
 #include "game.h"
+#include "die.h"
 
 /**
 *@brief motor gráfico

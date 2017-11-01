@@ -1,4 +1,4 @@
-/** 
+/**
 * @brief Implementa las funciones para el manejo de los dados.
 *
 * @file die.c
@@ -56,6 +56,13 @@ STATUS die_roll(Die *die, int semilla){
 
 	die->latest_roll = ((rand() % 6) + 1);
 	return OK;
+}
+
+int die_latest_roll(Die* die){
+	if(!die) return -1;
+
+	return die->latest_roll;
+
 }
 
 STATUS die_print(Die *die){

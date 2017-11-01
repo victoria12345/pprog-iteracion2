@@ -22,6 +22,8 @@
 */
 typedef long Id;
 
+typedef char line[8];
+
 /**
 * @brief tipo bool
 * Enumeración de un tipo de dato que puede ser FALSE o TRUE

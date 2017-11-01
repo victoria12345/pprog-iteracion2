@@ -1,10 +1,10 @@
-/** 
+/**
  * @brief Prototipo de las funciones de juego.
- * 
+ *
  * @file game.h
  * @author Victoria Pelayo e Ignacio Rabunnal
  * @version 1.1
- * @date 24-09-2017 
+ * @date 24-09-2017
  * @copyright GNU Public License
  */
 
@@ -27,9 +27,8 @@ typedef struct _Game{
   Object *objects[MAX_SPACES + 1];
   Space* spaces[MAX_SPACES + 1];
   Die* die;
-  T_Command last_cmd;
+  Command* last_cmd;
 } Game;
-
 
 /**
 *@brief Crea el juego.
@@ -44,7 +43,7 @@ STATUS game_create(Game* game);
 *@param filename  fichero desde el que se lee.
 *@return OK si se ha creado bien y ERROR si no ha sido así.
 */
-STATUS game_create_from_file(Game* game, char* filename);
+STATUS game_create_from_file(Game* game, char* filename1,char* filename2);
 
 /**
 *@brief llama a la función correspondiente para ejecutar el comando del juego. Actualiza el último comando del juego a cmd.
@@ -52,7 +51,7 @@ STATUS game_create_from_file(Game* game, char* filename);
 *@param cmd comando introducido por el jugador.
 *@return OK si la función se ha realizado correctamente y ERROR si no ha sido así.
 */
-STATUS game_update(Game* game, T_Command cmd);
+STATUS game_update(Game* game, Command* cmd);
 
 /**
 *@brief destruye el juego.
@@ -63,7 +62,7 @@ STATUS game_destroy(Game* game);
 
 /**
 *@brief Devuelve FALSE siempre. Acaba el juego.
-*@param game juego que se acaba 
+*@param game juego que se acaba
 *@return FALSE.
 */
 BOOL   game_is_over(Game* game);
@@ -117,5 +116,13 @@ T_Command game_get_last_command(Game* game);
 *@return OK si se ha añadido correctamente y ERROR si no ha sido así.
 */
 STATUS game_add_space(Game* game, Space* space);
+
+/**
+*@brief añade un objeto(ficha) al juego.
+*@param game puntero a game al que se le va a añadir una ficha.
+*@param space puntero a object, la ficha que se va a añadir
+*@return OK si se ha añadido correctamente y ERROR si no ha sido así.
+*/
+STATUS game_add_object(Game* game, Object* object);
 
 #endif
