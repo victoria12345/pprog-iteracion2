@@ -109,6 +109,8 @@ Id     game_get_object_location(Game* game, Object* object);
 */
 T_Command game_get_last_command(Game* game);
 
+char* command_name_game(Game* game);
+
 /**
 *@brief añade un espacio(casilla) al juego.
 *@param game puntero a game al que se le va a añadir una casilla.

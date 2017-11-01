@@ -56,8 +56,7 @@ void graphic_engine_paint_game(Graphic_engine *ge, Game *game){
   int i;
   Id id;
   Id id_act = NO_ID, id_back = NO_ID, id_next = NO_ID;
-  char object1[WORD_SIZE], object2[WORD_SIZE], object3[WORD_SIZE],object4[WORD_SIZE];
-  char *c1, *c2, *c3, *c4;
+  char objects[5];
 
   Space* space_act = NULL;
   Space* back = NULL;
@@ -67,10 +66,7 @@ void graphic_engine_paint_game(Graphic_engine *ge, Game *game){
   line* lines2;
   line* lines3;
 
-  strcpy(object1, " ");
-  strcpy(object2," ");
-  strcpy(object3, " ");
-  strcpy(object4," ");
+  objects[0] = '\0';
 
   /* Paint the in the map area */
   screen_area_clear(ge->map);
@@ -81,30 +77,23 @@ void graphic_engine_paint_game(Graphic_engine *ge, Game *game){
     lines1 = space_get_gdesc(space_act);
 
     if (id_back != NO_ID){
-      if(game_get_object_location(game, game->objects[0]) == id_back){
-        c1 = object_get_name(game->objects[0]);
-        if(c1 != NULL) strcpy(object1, c1);
+
+      for(i = 0; game->objects[i] != NULL && i < 5 ; i++){
+          if(game_get_object_location(game, game->objects[i]) == id_back){
+            /**fprintf(stderr, "%s\n", object_get_name(game->objects[i]));*/
+            strcat(objects, object_get_name(game->objects[i]));
+        }
       }
 
-      if(game_get_object_location(game, game->objects[1]) == id_back){
-        c2 = object_get_name(game->objects[1]);
-        if(c2 != NULL) strcpy(object2, c2);
-      }
-      if(game_get_object_location(game, game->objects[2]) == id_back){
-        c3 = object_get_name(game->objects[2]);
-        if(c3 != NULL) strcpy(object3, c3);
-      }
-
-      if(game_get_object_location(game, game->objects[3]) == id_back){
-        c4 = object_get_name(game->objects[3]);
-        if(c4 != NULL) strcpy(object4, c4);
+      if(strlen(objects) < 11){
+        for(i = 0; strlen(objects) < 4; i++) strcat(objects, " ");
       }
 
       back = game_get_space(game, id_back);
       lines2 = space_get_gdesc(back);
       sprintf(str, "  |         %2d|",(int) id_back);
       screen_area_puts(ge->map, str);
-      sprintf(str, "  |   %s %s %s %s |",object1, object2, object3, object4);
+      sprintf(str, "  |  %c %c %c %c  |",objects[0], objects[1], objects[2], objects[3]);
       screen_area_puts(ge->map, str);
       for(i = 0; i < NUM_LINES; i++){
         sprintf(str, "  |  %s  |",lines2[i]);
@@ -116,37 +105,26 @@ void graphic_engine_paint_game(Graphic_engine *ge, Game *game){
       screen_area_puts(ge->map, str);
     }
 
-    strcpy(object1, " ");
-    strcpy(object2, " ");
-    strcpy(object3, " ");
-    strcpy(object4," ");
+  objects[0] = '\0';
 
     if (id_act != NO_ID) {
 
-      if(game_get_object_location(game, game->objects[0]) == id_act){
-        c1 = object_get_name(game->objects[0]);
-        if(c1 != NULL) strcpy(object1, c1);
+      for(i = 0; game->objects[i] != NULL && i < 5; i++){
+          if(game_get_object_location(game, game->objects[i]) == id_act){
+          /**  fprintf(stderr, "%s\n", object_get_name(game->objects[i]));*/
+            strcat(objects, object_get_name(game->objects[i]));
+        }
       }
 
-      if(game_get_object_location(game, game->objects[1]) == id_act){
-        c2 = object_get_name(game->objects[1]);
-        if(c2 != NULL) strcpy(object2, c2);
-      }
-      if(game_get_object_location(game, game->objects[2]) == id_act){
-        c3 = object_get_name(game->objects[2]);
-        if(c3 != NULL) strcpy(object3, c3);
-      }
-
-      if(game_get_object_location(game, game->objects[3]) == id_act){
-        c4 = object_get_name(game->objects[3]);
-        if(c4 != NULL) strcpy(object4, c4);
+      if(strlen(objects) < 4){
+        for(i = 0; strlen(objects) < 4; i++) strcat(objects, " ");
       }
 
       sprintf(str, "  +-----------+");
       screen_area_puts(ge->map, str);
       sprintf(str, "  | 8D      %2d|",(int) id_act);
       screen_area_puts(ge->map, str);
-      sprintf(str, "  |   %s %s %s %s |",object1, object2, object3, object4);
+      sprintf(str, "  |  %c %c %c %c  |",objects[0], objects[1], objects[2], objects[3]);
       screen_area_puts(ge->map, str);
       for(i = 0; i < NUM_LINES; i++){
         sprintf(str, "  |  %s  |",lines1[i]);
@@ -156,32 +134,20 @@ void graphic_engine_paint_game(Graphic_engine *ge, Game *game){
       screen_area_puts(ge->map, str);
     }
 
-    strcpy(object1, " ");
-    strcpy(object2, " ");
-    strcpy(object3, " ");
-    strcpy(object4," ");
+  objects[0] = '\0';
 
     if (id_next != NO_ID) {
 
-      if(game_get_object_location(game, game->objects[0]) == id_next){
-        c1 = object_get_name(game->objects[0]);
-        if(c1 != NULL) strcpy(object1, c1);
+      for(i = 0; game->objects[i] != NULL && i < 5; i++){
+          if(game_get_object_location(game, game->objects[i]) == id_next){
+          /**  fprintf(stderr, "%s\n", object_get_name(game->objects[i]));*/
+            strcat(objects, object_get_name(game->objects[i]));
+        }
       }
 
-      if(game_get_object_location(game, game->objects[1]) == id_next){
-        c2 = object_get_name(game->objects[1]);
-        if(c2 != NULL) strcpy(object2, c2);
+      if(strlen(objects) < 4){
+        for(i = 0; strlen(objects) < 4; i++) strcat(objects, " ");
       }
-      if(game_get_object_location(game, game->objects[2]) == id_next){
-        c3 = object_get_name(game->objects[2]);
-        if(c3 != NULL) strcpy(object3, c3);
-      }
-
-      if(game_get_object_location(game, game->objects[3]) == id_next){
-        c4 = object_get_name(game->objects[3]);
-        if(c4 != NULL) strcpy(object4, c4);
-      }
-
       next = game_get_space(game, id_next);
       lines3 = space_get_gdesc(next);
       sprintf(str, "        v");
@@ -190,7 +156,7 @@ void graphic_engine_paint_game(Graphic_engine *ge, Game *game){
       screen_area_puts(ge->map, str);
       sprintf(str, "  |         %2d|",(int) id_next);
       screen_area_puts(ge->map, str);
-      sprintf(str, "  |   %s %s %s %s |",object1, object2, object3, object4);
+      sprintf(str, "  |  %c %c %c %c  |",objects[0], objects[1], objects[2], objects[3]);
       screen_area_puts(ge->map, str);
       for(i = 0; i < NUM_LINES; i++){
         sprintf(str, "  |  %s  |",lines3[i]);
@@ -206,16 +172,8 @@ void graphic_engine_paint_game(Graphic_engine *ge, Game *game){
 
   /** Imprimirá por pantalla el nombre de los objetos,lo hemos tomado como su simbolo,
   seguido de la casilla en la que se encuentran*/
-  /**
-  sprintf(str, "  Objects location: %s: %d,       %s: %d,  %s: %d,  %s: %d ",
-  object_get_name(game->objects[0]), (int)game_get_object_location(game, game->objects[0]),
-  object_get_name(game->objects[1]), (int)game_get_object_location(game, game->objects[1]),
-  object_get_name(game->objects[2]), (int)game_get_object_location(game, game->objects[2]),
-  object_get_name(game->objects[3]), (int)game_get_object_location(game, game->objects[3]));
-  screen_area_puts(ge->descript, str);
-  */
 
-  sprintf(str, "Objects location: ");
+  sprintf(str, "  Objects location: ");
   screen_area_puts(ge->descript, str);
 
   for(i = 0; game->objects[i] != NULL; i++){
@@ -228,8 +186,19 @@ void graphic_engine_paint_game(Graphic_engine *ge, Game *game){
   screen_area_puts(ge->descript, str);
 
   id = player_get_object(game->player);
-  sprintf(str, "  Player object: %ld", id);
-  screen_area_puts(ge->descript, str);
+
+  for(i = 0;i < MAX_SPACES + 1 && game->objects[i] != NULL; i++){
+    if (object_get_id(game->objects[i]) == id){
+      sprintf(str, "  Player object: %s", object_get_name(game->objects[i]));
+      screen_area_puts(ge->descript, str);
+      i = WORD_SIZE + 1;
+    }
+  }
+
+  if(i == WORD_SIZE + 1 || game->objects[i] == NULL){
+      sprintf(str, "  Player object: null");
+      screen_area_puts(ge->descript, str);
+  }
 
   sprintf(str, " ");
   screen_area_puts(ge->descript, str);

@@ -68,7 +68,6 @@ STATUS game_set_object_location(Game* game, Id id, Object* object);
 Game interface implementation
 */
 
-
 STATUS game_create(Game* game) {
   int i;
 
