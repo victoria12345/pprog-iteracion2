@@ -204,15 +204,25 @@ void graphic_engine_paint_game(Graphic_engine *ge, Game *game){
   /* Paint the in the description area */
   screen_area_clear(ge->descript);
 
-/** Imprimirá por pantalla el nombre de los objetos,lo hemos tomado como su simbolo,
- seguido de la casilla en la que se encuentran*/
-
+  /** Imprimirá por pantalla el nombre de los objetos,lo hemos tomado como su simbolo,
+  seguido de la casilla en la que se encuentran*/
+  /**
   sprintf(str, "  Objects location: %s: %d,       %s: %d,  %s: %d,  %s: %d ",
-                object_get_name(game->objects[0]), (int)game_get_object_location(game, game->objects[0]),
-                object_get_name(game->objects[1]), (int)game_get_object_location(game, game->objects[1]),
-                object_get_name(game->objects[2]), (int)game_get_object_location(game, game->objects[2]),
-                object_get_name(game->objects[3]), (int)game_get_object_location(game, game->objects[3]));
+  object_get_name(game->objects[0]), (int)game_get_object_location(game, game->objects[0]),
+  object_get_name(game->objects[1]), (int)game_get_object_location(game, game->objects[1]),
+  object_get_name(game->objects[2]), (int)game_get_object_location(game, game->objects[2]),
+  object_get_name(game->objects[3]), (int)game_get_object_location(game, game->objects[3]));
   screen_area_puts(ge->descript, str);
+  */
+
+  sprintf(str, "Objects location: ");
+  screen_area_puts(ge->descript, str);
+
+  for(i = 0; game->objects[i] != NULL; i++){
+    sprintf(str, "   %s : %d",
+      object_get_name(game->objects[i]), (int)game_get_object_location(game, game->objects[i]));
+      screen_area_puts(ge->descript, str);
+  }
 
   sprintf(str, " ");
   screen_area_puts(ge->descript, str);
