@@ -218,7 +218,7 @@ void graphic_engine_paint_game(Graphic_engine *ge, Game *game){
   screen_area_puts(ge->descript, str);
 
   id = player_get_object(game->player);
-  sprintf(str, "  Players objects: %ld", id);
+  sprintf(str, "  Player object: %ld", id);
   screen_area_puts(ge->descript, str);
 
   sprintf(str, " ");

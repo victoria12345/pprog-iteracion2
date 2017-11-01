@@ -466,9 +466,9 @@ void game_callback_drop(Game* game){
 
   space_id = game_get_player_location(game);
 
-  object_id = object_get_id(game ->objects[0]);
+  object_id = player_get_object(game->player);
 
-  if (space_id == NO_ID || object_id == NO_ID || player_get_object(game->player) == NO_ID ) {
+  if (space_id == NO_ID || object_id == NO_ID) {
 
     command_set_status(game->last_cmd,"ERROR" );
 
