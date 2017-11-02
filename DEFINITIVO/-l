@@ -1,5 +1,12 @@
-    
-NEXT :  OK 
-BACK :  OK 
-DROP :  ERROR 
-PICK :  ERROR 
+Next:  OK 
+Next:  OK 
+Next:  OK 
+Back:  OK 
+Pick:  OK 
+Next:  OK 
+Next:  OK 
+Right:  OK 
+Left:  OK 
+Drop:  OK 
+Roll:  OK 
+Quit:  OK 

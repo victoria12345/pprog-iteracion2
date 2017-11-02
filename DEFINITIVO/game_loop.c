@@ -56,10 +56,10 @@ int main(int argc, char *argv[]){
     graphic_engine_paint_game(gengine, &game);
     command_destroy(command);
     command = get_user_input();
+    game_update(&game, command);
 
     fprintf(f, "%s %s \n", command_get_name( game_get_last_command(&game) ),
-        command_get_status( game_get_last_command(&game) ));
-    game_update(&game, command);
+    command_get_status( game_get_last_command(&game) ));
   }
 
   game_destroy(&game);

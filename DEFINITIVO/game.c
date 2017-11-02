@@ -292,7 +292,7 @@ Callbacks implementation for each action
 *@param game juego que se está jugando
 */
 void game_callback_unknown(Game* game) {
-  command_set_name(game->last_cmd, "UNKNOWN");
+  command_set_name(game->last_cmd, "Unknown");
 
   /** En este caso no asignamos ningun status especifico*/
   command_set_status(game->last_cmd, " ");
@@ -303,7 +303,7 @@ void game_callback_unknown(Game* game) {
 *@param game juego que se está jugando.
 */
 void game_callback_quit(Game* game) {
-  command_set_name(game->last_cmd, "QUIT: ");
+  command_set_name(game->last_cmd, "Quit: ");
   command_set_status(game->last_cmd, "OK");
 }
 
@@ -316,7 +316,7 @@ void game_callback_next(Game* game) {
   Id current_id = NO_ID;
   Id space_id = NO_ID;
 
-  command_set_name(game->last_cmd, "NEXT : ");
+  command_set_name(game->last_cmd, "Next: ");
 
   space_id = game_get_player_location(game);
   if (space_id == NO_ID) {
@@ -355,7 +355,7 @@ void game_callback_back(Game* game) {
   Id current_id = NO_ID;
   Id space_id = NO_ID;
 
-  command_set_name(game->last_cmd, "BACK : ");
+  command_set_name(game->last_cmd, "Back: ");
 
   space_id = game_get_player_location(game);
 
@@ -396,7 +396,7 @@ void game_callback_pick(Game* game){
   Space *space;
   Id* ids;
 
-  command_set_name(game->last_cmd, "PICK : ");
+  command_set_name(game->last_cmd, "Pick: ");
 
   for(i = 0, j = 0; i<= MAX_SPACES && game->objects[i] != NULL && j < 1; i++){
 
@@ -459,7 +459,7 @@ void game_callback_drop(Game* game){
   Id space_id, object_id;
   Space* space;
 
-  command_set_name(game->last_cmd, "DROP : ");
+  command_set_name(game->last_cmd, "Drop: ");
 
 
   space_id = game_get_player_location(game);
@@ -498,7 +498,7 @@ void game_callback_left(Game* game){
   Id current_id = NO_ID, current_id2 = NO_ID;
   Id space_id = NO_ID;
 
-  command_set_name(game->last_cmd, "LEFT : ");
+  command_set_name(game->last_cmd, "Left: ");
 
 
   space_id = game_get_player_location(game);
@@ -553,7 +553,7 @@ void game_callback_right(Game* game){
   Id current_id = NO_ID, current_id2 = NO_ID;
   Id space_id = NO_ID;
 
-  command_set_name(game->last_cmd, "RIGHT : ");
+  command_set_name(game->last_cmd, "Right: ");
 
   space_id = game_get_player_location(game);
 
@@ -610,7 +610,7 @@ void game_callback_roll(Game* game){
     return;
   }
 
-  command_set_name(game->last_cmd, "ROLL : ");
+  command_set_name(game->last_cmd, "Roll: ");
 
   die_roll(game->die, time(NULL));
 
